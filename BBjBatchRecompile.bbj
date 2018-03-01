@@ -1,0 +1,120 @@
+use java.io.File
+use java.nio.file.Files
+use java.nio.file.Paths
+use java.nio.file.CopyOption
+use java.nio.file.StandardCopyOption
+use com.basis.bbj.BBjCplImpl
+
+class public BBjBatchRecompile
+
+    
+    method public static void backupFile(BBjString file$, BBjString backuppath$)
+    
+        path! = file$
+        file$=str(path!.replaceAll("\\","/"))
+        
+        backuppath! = backuppath$
+        backuppath$=str(backuppath!.replaceAll("\\","/"))
+
+
+    
+        rem Make sure the destination directory exists
+        destDir! = new File(backuppath$)
+        
+        if !(destDir!.exists())
+            destDir!.mkdirs()
+        endif
+    
+    
+        from! = Paths.get(file$)
+        to! = Paths.get(backuppath$+"/"+new File(file$).getName())
+
+        
+        options! = new CopyOption[2] 
+        options![0]=StandardCopyOption.REPLACE_EXISTING
+        options![1]=StandardCopyOption.COPY_ATTRIBUTES
+    
+        Files.copy(from!,to!,options!)
+    
+    methodend
+
+
+    method public static BBjVector recompileBBjProgram(BBjString file$)
+    
+        path! = file$
+        file$=str(path!.replaceAll("\\","/"))
+        
+        file$=BBjAPI().getFileSystem().resolvePath(file$)
+        
+        e! = File.createTempFile("recompile",".err")
+        e!.deleteOnExit()
+        
+        f! = new File(file$)
+        
+        compiler! = new com.basis.bbj.BBjCplImpl()
+        options! = new BBjVector()
+        options!.addItem("-F")
+        options!.addItem("-d"+f!.getParent())
+        options!.addItem("-e"+e!.getPath())
+        options!.addItem(file$)
+        
+        compiler!.compile(options!)
+
+        ret! = new BBjVector()
+        ch = unt
+        open (ch)e!.getPath()
+        while ch
+            read (ch,end=*break)errline$
+            if errline$>"" then
+                ret!.addItem(errline$)
+            fi
+        wend
+        close (ch)
+        
+        methodret ret!
+    
+    methodend
+    
+    method public static BBjVector recursiveRecompile(BBjString startPath$, BBjString backupdir$, BBjNumber fBackup, BBjNumber fRecursive)
+    
+        ret! = new BBjVector()
+        ch=unt
+        open (ch,err=returnMethod)startPath$
+        while 1
+            read record(ch,end=*break)entry$
+            if entry$(1,1)="." then continue
+            che=unt
+            open (che)startPath$+"/"+entry$
+            fd$=fid(che)
+            close (che)
+            if fd$(1,1)=$05$ AND fRecursive then
+                BBjBatchRecompile.recursiveRecompile(startPath$+"/"+entry$,backupdir$+"/"+entry$,fBackup,fRecursive)
+                continue
+            fi
+
+            if fd$(1,1)=$04$ OR fd$(1,1)=$84$ then
+                if fBackup then
+                    BBjBatchRecompile.backupFile(startPath$+"/"+entry$,backupdir$)
+                fi
+                recret! = BBjBatchRecompile.recompileBBjProgram(startPath$+"/"+entry$)
+                ret!.addAll(recret!)
+                continue
+            fi
+            
+        wend
+        
+        
+      returnMethod:
+        
+        if (ch>0) then close (ch)
+        
+        methodret ret!
+    methodend
+
+classend
+
+
+rem BBjBatchRecompile.backupFile("D:\tmp\test.bbj","D:\tmp.backup/test\tmp/test1")
+REM ? BBjBatchRecompile.recompileBBjProgram("D:\tmp\test.bbj")
+
+?BBjBatchRecompile.recursiveRecompile("D:\tmp/","D:\tmp.backup",1,1)
