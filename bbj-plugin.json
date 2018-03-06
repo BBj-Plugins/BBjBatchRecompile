@@ -1,0 +1,6 @@
+{
+    "name":"BBjBatchRecompile",
+    "description":"A Plug-In to recursively recompile BBj programs",
+    "version":"1.00",
+    "author":"Basis"
+}
