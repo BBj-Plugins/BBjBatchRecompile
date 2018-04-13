@@ -1,6 +1,6 @@
 {
     "name":"BBjBatchRecompile",
-    "description":"A Plug-In to recursively recompile BBj programs",
+    "description":"A Plug-In to recursively recompile BBj programs in any environment, to reduce load times and system load due to ad-hoc recompiles.",
     "version":"1.00",
     "author":"Basis"
 }
