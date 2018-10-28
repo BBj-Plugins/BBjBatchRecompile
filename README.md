@@ -1,2 +1,1 @@
-# BBjBatchRecompile
-A Plug-In to recursively recompile BBj programs
+This plug-in lets you recompile programs in one or more directories in a batch. This is useful for deployment to systems than run a more recent BBj version than the version that had been used to build the binaries for deployment. While BBj is always able to upgrade older binary formats, recompiling for the "correct" version ensures best possible performance and resource usage at runtime, esp. on larger systems.
