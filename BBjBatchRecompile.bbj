@@ -7,7 +7,14 @@ use com.basis.bbj.BBjCplImpl
 
 class public BBjBatchRecompile
 
-    
+    REM /**
+    REM  * 
+    REM  * Creating a backup file of the given file at the given path
+    REM  * 
+    REM  * @param file$ the link to the file of which the backup is supposed to be made
+    REM  * @param backuppath$ the path under which the backup is supposed to be saved
+    REM  * 
+    REM  */
     method public static void backupFile(BBjString file$, BBjString backuppath$)
     
         path! = file$
@@ -38,7 +45,15 @@ class public BBjBatchRecompile
     
     methodend
 
-
+    REM /**
+    REM  * 
+    REM  * Recompiles the file at the given location 
+    REM  * 
+    REM  * @param file$ The path of the file thats supposed to be recompiled
+    REM  * 
+    REM  * @return A BBjVector containing strings of the errors that happened
+    REM  * 
+    REM  */
     method public static BBjVector recompileBBjProgram(BBjString file$)
     
         path! = file$
@@ -75,6 +90,18 @@ class public BBjBatchRecompile
     
     methodend
     
+    REM /**
+    REM  *     
+    REM  * Recompiles the files starting at the given location 
+    REM  * 
+    REM  * @param startPath$ The path of the file thats supposed to be the start of the recompiled batch
+    REM  * @param backupdir$ The directiory where the backups are supposed to be saved
+    REM  * @param fBackup A number indicating wether a backup is supposed to be created or not
+    REM  * @param fRecursive A number indicating wether the compile should be recursive or not
+    REM  * 
+    REM  * @return A BBjVector containing strings of the errors that happened
+    REM  * 
+    REM  */    
     method public static BBjVector recursiveRecompile(BBjString startPath$, BBjString backupdir$, BBjNumber fBackup, BBjNumber fRecursive)
     
         ret! = new BBjVector()
